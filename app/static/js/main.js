@@ -141,15 +141,28 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(sentinel);
     }
 
-    // Show loading icon on page transition
-    window.addEventListener('beforeunload', () => {
+    // Show loading icon before navigating to a new page
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('a');
+        if (target && target.href && !target.href.startsWith('#') && !target.href.includes('javascript:')) {
+            e.preventDefault();
+            document.getElementById('loading-icon').style.display = 'flex';
+            setTimeout(() => {
+                window.location.href = target.href;
+            }, 100);
+        }
+    });
+
+    // Show loading icon on form submissions
+    document.addEventListener('submit', (e) => {
         document.getElementById('loading-icon').style.display = 'flex';
     });
 
     // Hide loading icon when page is fully loaded
     window.addEventListener('load', () => {
-        setTimeout(() => {
-            document.getElementById('loading-icon').style.display = 'none';
-        }, 300); // 300ms delay
+        document.getElementById('loading-icon').style.display = 'none';
     });
+
+    console.log('DOMContentLoaded event fired');
+    console.log('Initial loading icon display:', document.getElementById('loading-icon').style.display);
 });
