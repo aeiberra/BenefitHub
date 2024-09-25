@@ -1,5 +1,5 @@
 from app import db, create_app
-from app.models import Category, Benefit
+from app.models import Category, Benefit, User
 
 def seed_data():
     app = create_app()
@@ -31,6 +31,14 @@ def seed_data():
         ]
         db.session.add_all(benefits)
         db.session.commit()
+
+        # Add default admin user
+        admin_user = User.query.filter_by(username='admin').first()
+        if not admin_user:
+            admin_user = User(username='admin')
+            admin_user.set_password('admin123')
+            db.session.add(admin_user)
+            db.session.commit()
 
 if __name__ == '__main__':
     seed_data()
