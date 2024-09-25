@@ -22,7 +22,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     image_url = db.Column(db.String(256))
-    order = db.Column(db.Integer, default=0)  # New field for ordering
+    order = db.Column(db.Integer, default=0, nullable=False)
     benefits = db.relationship('Benefit', backref='category', lazy='dynamic')
 
 class Benefit(db.Model):

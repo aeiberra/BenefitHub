@@ -5,6 +5,7 @@ from app.models import Benefit, Category, Redemption
 from app import db
 from sqlalchemy import func
 from datetime import datetime, timedelta
+import logging
 
 @bp.route('/dashboard')
 @login_required
@@ -144,6 +145,7 @@ def update_category_order():
     new_order = data.get('new_order')
     
     if category_id is None or new_order is None:
+        logging.error(f"Invalid data received: category_id={category_id}, new_order={new_order}")
         return jsonify({'success': False, 'error': 'Invalid data'}), 400
     
     try:
@@ -152,18 +154,20 @@ def update_category_order():
         category_to_move = next((cat for cat in categories if cat.id == category_id), None)
         
         if category_to_move is None:
+            logging.error(f"Category not found: id={category_id}")
             return jsonify({'success': False, 'error': 'Category not found'}), 404
         
         categories.remove(category_to_move)
-        
         categories.insert(new_order, category_to_move)
         
         for index, category in enumerate(categories):
             category.order = index
+            db.session.add(category)
         
         db.session.commit()
-        
+        logging.info(f"Category order updated successfully: id={category_id}, new_order={new_order}")
         return jsonify({'success': True})
     except Exception as e:
         db.session.rollback()
+        logging.error(f"Error updating category order: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
