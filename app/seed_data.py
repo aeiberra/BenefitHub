@@ -2,6 +2,7 @@ import os
 from app import db, create_app
 from app.models import Category, Benefit, User
 import psycopg2
+import logging
 
 def seed_data():
     app = create_app()
@@ -75,7 +76,15 @@ def seed_data():
             admin_user = User(username='admin')
             admin_user.set_password('admin123')
             db.session.add(admin_user)
-            db.session.commit()
+            try:
+                db.session.commit()
+                print("Admin user created successfully")
+            except Exception as e:
+                db.session.rollback()
+                print(f"Error creating admin user: {e}")
+                logging.error(f"Error creating admin user: {e}")
+        else:
+            print("Admin user already exists")
 
     print("Sample data has been added to the database.")
 
