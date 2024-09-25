@@ -38,6 +38,12 @@
             {% endfor %}
         </select>
     </div>
+    <div class="mb-4">
+        <label class="flex items-center">
+            <input type="checkbox" class="form-checkbox" name="featured" {% if benefit and benefit.featured %}checked{% endif %}>
+            <span class="ml-2 text-gray-700 text-sm font-bold">Destacado</span>
+        </label>
+    </div>
     <div class="flex items-center justify-between">
         <button class="btn-primary" type="submit">
             {% if benefit %}Actualizar{% else %}Agregar{% endif %} Beneficio
