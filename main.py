@@ -13,9 +13,14 @@ with app.app_context():
     else:
         print("Database URL is not set")
 
-    # Check if the database is empty
-    if User.query.count() == 0:
-        seed_data()  # Seed the database with initial data
+    try:
+        # Check if the database is empty
+        if User.query.count() == 0 and Category.query.count() == 0 and Benefit.query.count() == 0:
+            seed_data()  # Seed the database with initial data
+        else:
+            print("Database already contains data. Skipping seed operation.")
+    except Exception as e:
+        print(f"Error occurred while seeding the database: {e}")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
