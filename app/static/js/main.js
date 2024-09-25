@@ -50,7 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     document.title = doc.title;
-                    document.querySelector('main').innerHTML = doc.querySelector('main').innerHTML;
+                    const mainContent = doc.querySelector('main');
+                    if (mainContent) {
+                        document.querySelector('main').innerHTML = mainContent.innerHTML;
+                    }
                     history.pushState(null, '', link.href);
                     hideLoading();
                 })
@@ -70,7 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 document.title = doc.title;
-                document.querySelector('main').innerHTML = doc.querySelector('main').innerHTML;
+                const mainContent = doc.querySelector('main');
+                if (mainContent) {
+                    document.querySelector('main').innerHTML = mainContent.innerHTML;
+                }
                 hideLoading();
             })
             .catch(error => {
@@ -81,9 +87,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showLoading() {
-    document.getElementById('loading').classList.remove('hidden');
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement) {
+        loadingElement.classList.remove('hidden');
+    } else {
+        console.warn('Loading element not found');
+    }
 }
 
 function hideLoading() {
-    document.getElementById('loading').classList.add('hidden');
+    const loadingElement = document.getElementById('loading');
+    if (loadingElement) {
+        loadingElement.classList.add('hidden');
+    } else {
+        console.warn('Loading element not found');
+    }
 }
