@@ -18,6 +18,8 @@ def login():
             return render_template('admin/login.html')
         
         user = User.query.filter_by(username=username).first()
+        logging.info(f"User query result: {user}")
+        
         if user is None:
             flash('Invalid username')
             logging.warning(f"Login attempt with invalid username: {username}")
