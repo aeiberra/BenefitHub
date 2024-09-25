@@ -1,6 +1,7 @@
 from app import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,7 +21,7 @@ def load_user(id):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
-    image_url = db.Column(db.String(256))  # New field for category image
+    image_url = db.Column(db.String(256))
     benefits = db.relationship('Benefit', backref='category', lazy='dynamic')
 
 class Benefit(db.Model):
@@ -35,7 +36,10 @@ class Benefit(db.Model):
 
 class Redemption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    unique_id = db.Column(db.String(36), unique=True, default=lambda: str(uuid.uuid4()))
     dni = db.Column(db.String(20))
     benefit_id = db.Column(db.Integer, db.ForeignKey('benefit.id'))
     qr_code = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime, index=True, default=db.func.now())
+    is_scanned = db.Column(db.Boolean, default=False)
+    scanned_timestamp = db.Column(db.DateTime, nullable=True)

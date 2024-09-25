@@ -1,10 +1,11 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, url_for
 from app.main import bp
 from app.models import Category, Benefit, Redemption
 from app import db
 import qrcode
 import io
 import base64
+from datetime import datetime
 
 @bp.route('/')
 def index():
@@ -30,9 +31,15 @@ def redeem():
     
     benefit = Benefit.query.get_or_404(benefit_id)
     
-    # Generate QR code
+    # Create redemption record
+    redemption = Redemption(dni=dni, benefit_id=benefit_id)
+    db.session.add(redemption)
+    db.session.commit()
+    
+    # Generate QR code with unique identifier
+    qr_data = url_for('main.confirm_redemption', unique_id=redemption.unique_id, _external=True)
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    qr.add_data(f"Benefit: {benefit.name}, DNI: {dni}")
+    qr.add_data(qr_data)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
     
@@ -41,9 +48,22 @@ def redeem():
     img.save(buffered)
     qr_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
     
-    # Save redemption
-    redemption = Redemption(dni=dni, benefit_id=benefit_id, qr_code=qr_base64)
-    db.session.add(redemption)
+    # Update redemption record with QR code
+    redemption.qr_code = qr_base64
     db.session.commit()
     
     return jsonify({'qr_code': qr_base64})
+
+@bp.route('/confirm_redemption/<unique_id>')
+def confirm_redemption(unique_id):
+    redemption = Redemption.query.filter_by(unique_id=unique_id).first_or_404()
+    
+    if not redemption.is_scanned:
+        redemption.is_scanned = True
+        redemption.scanned_timestamp = datetime.utcnow()
+        db.session.commit()
+        message = "Benefit redeemed successfully!"
+    else:
+        message = "This benefit has already been redeemed."
+    
+    return render_template('confirm_redemption.html', redemption=redemption, message=message)
