@@ -27,8 +27,10 @@ def seed_data():
 
         # Add default admin user
         try:
+            logging.info("Checking for existing admin user...")
             admin_user = User.query.filter_by(username='admin').first()
             if not admin_user:
+                logging.info("Admin user not found. Creating new admin user...")
                 admin_user = User(username='admin')
                 admin_user.set_password('admin123')
                 db.session.add(admin_user)
@@ -41,7 +43,13 @@ def seed_data():
             admin_user = User.query.filter_by(username='admin').first()
             if admin_user:
                 logging.info(f"Admin user found in database: {admin_user.username}")
+                logging.info(f"Admin user ID: {admin_user.id}")
                 logging.info(f"Admin user password hash: {admin_user.password_hash}")
+                
+                # Test password verification
+                test_password = 'admin123'
+                is_password_correct = admin_user.check_password(test_password)
+                logging.info(f"Is 'admin123' the correct password? {is_password_correct}")
             else:
                 logging.error("Admin user not found in database after creation attempt")
 
@@ -53,7 +61,7 @@ def seed_data():
             logging.error(f"Error during admin user creation or verification: {e}")
             db.session.rollback()
 
-        logging.info("Sample data has been added to the database.")
+        logging.info("Seed data process completed.")
 
 if __name__ == '__main__':
     seed_data()
