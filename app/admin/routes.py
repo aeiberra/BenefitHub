@@ -114,20 +114,17 @@ def analytics():
 @bp.route('/api/analytics')
 @login_required
 def api_analytics():
-    # Daily redemptions for the last 7 days
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
     daily_redemptions = db.session.query(
         func.date(Redemption.timestamp).label('date'),
         func.count(Redemption.id).label('count')
     ).filter(Redemption.timestamp >= seven_days_ago).group_by(func.date(Redemption.timestamp)).all()
 
-    # Top 5 benefits
     top_benefits = db.session.query(
         Benefit.name,
         func.count(Redemption.id).label('count')
     ).join(Redemption).group_by(Benefit.id).order_by(func.count(Redemption.id).desc()).limit(5).all()
 
-    # Redemptions by category
     category_redemptions = db.session.query(
         Category.name,
         func.count(Redemption.id).label('count')
@@ -138,3 +135,35 @@ def api_analytics():
         'top_benefits': [{'name': item.name, 'count': item.count} for item in top_benefits],
         'category_redemptions': [{'name': item.name, 'count': item.count} for item in category_redemptions]
     })
+
+@bp.route('/update_category_order', methods=['POST'])
+@login_required
+def update_category_order():
+    data = request.json
+    category_id = data.get('category_id')
+    new_order = data.get('new_order')
+    
+    if category_id is None or new_order is None:
+        return jsonify({'success': False, 'error': 'Invalid data'}), 400
+    
+    try:
+        categories = Category.query.order_by(Category.order).all()
+        
+        category_to_move = next((cat for cat in categories if cat.id == category_id), None)
+        
+        if category_to_move is None:
+            return jsonify({'success': False, 'error': 'Category not found'}), 404
+        
+        categories.remove(category_to_move)
+        
+        categories.insert(new_order, category_to_move)
+        
+        for index, category in enumerate(categories):
+            category.order = index
+        
+        db.session.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500

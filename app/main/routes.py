@@ -9,7 +9,7 @@ from datetime import datetime
 
 @bp.route('/')
 def index():
-    categories = Category.query.all()
+    categories = Category.query.order_by(Category.order).all()
     featured_benefits = Benefit.query.filter_by(featured=True).limit(5).all()
     return render_template('index.html', categories=categories, featured_benefits=featured_benefits)
 

@@ -11,14 +11,18 @@
     <table class="min-w-full">
         <thead>
             <tr>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Orden</th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Imagen</th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="sortable-categories">
             {% for category in categories %}
-            <tr>
+            <tr data-id="{{ category.id }}" class="cursor-move">
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                    <span class="handle">☰</span>
+                </td>
                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ category.name }}</td>
                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                     <img src="{{ category.image_url }}" alt="{{ category.name }}" class="h-10 w-10 rounded-full">
@@ -38,4 +42,5 @@
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script src="{{ url_for('static', filename='js/category-order.js') }}"></script>
 {% endblock %}
