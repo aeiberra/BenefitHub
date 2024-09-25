@@ -4,45 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Plataforma de Beneficios{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-100 font-sans">
-    <header class="bg-blue-600 text-white shadow-md">
-        <nav class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <a href="{{ url_for('main.index') }}" class="text-2xl font-bold flex items-center">
-                    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" class="h-8 w-8 mr-2">
-                    Plataforma de Beneficios
-                </a>
-                <div class="flex-1 mx-4">
-                    <form action="{{ url_for('main.search') }}" method="GET" class="flex">
-                        <input type="text" name="q" placeholder="Buscar beneficios..." class="w-full px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-800">
-                        <button type="submit" class="bg-white text-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-100 transition duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </form>
+<body class="font-sans">
+    <header class="header">
+        <div class="header-content">
+            <a href="{{ url_for('main.index') }}" class="logo">
+                <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" class="h-8 w-8 mr-2">
+                Plataforma de Beneficios
+            </a>
+            <form action="{{ url_for('main.search') }}" method="GET" class="search-form">
+                <div class="flex">
+                    <input type="text" name="q" placeholder="Buscar beneficios..." class="search-input">
+                    <button type="submit" class="search-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
-                <div>
-                    {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('admin.dashboard') }}" class="text-white hover:text-gray-200 mr-4">Panel de Administración</a>
-                        <a href="{{ url_for('auth.logout') }}" class="text-white hover:text-gray-200">Cerrar Sesión</a>
-                    {% else %}
-                        <a href="{{ url_for('auth.login') }}" class="text-white hover:text-gray-200">Admin Login</a>
-                    {% endif %}
-                </div>
+            </form>
+            <div>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="text-blue-600 hover:text-blue-800 mr-4">Panel de Administración</a>
+                    <a href="{{ url_for('auth.logout') }}" class="text-blue-600 hover:text-blue-800">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="text-blue-600 hover:text-blue-800">Admin Login</a>
+                {% endif %}
             </div>
-        </nav>
+        </div>
     </header>
 
-    <main class="container mx-auto px-6 py-8">
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-gray-800 text-white py-6">
-        <div class="container mx-auto px-6 text-center">
+    <footer class="footer">
+        <div class="footer-content">
             <p>&copy; 2023 Plataforma de Beneficios. Todos los derechos reservados.</p>
         </div>
     </footer>

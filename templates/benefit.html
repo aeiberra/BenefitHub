@@ -3,13 +3,43 @@
 {% block title %}{{ benefit.name }} - Plataforma de Beneficios{% endblock %}
 
 {% block content %}
-<div class="bg-white shadow-lg rounded-lg overflow-hidden">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
     <img src="{{ benefit.image_url }}" alt="{{ benefit.name }}" class="w-full h-64 object-cover">
-    <div class="p-6">
-        <h1 class="text-3xl font-bold mb-4">{{ benefit.name }}</h1>
+    <div class="p-8">
+        <h1 class="text-3xl font-bold mb-4 text-blue-600">{{ benefit.name }}</h1>
         <p class="text-gray-600 mb-4">{{ benefit.description }}</p>
-        <p class="font-semibold mb-2">Empresa: {{ benefit.company }}</p>
-        <p class="font-semibold mb-4">Categoría: {{ benefit.category.name }}</p>
+        <div class="flex justify-between items-center mb-6">
+            <span class="text-blue-600 font-semibold text-lg">{{ benefit.company }}</span>
+            <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded">{{ benefit.category.name }}</span>
+        </div>
+        
+        <div x-data="{ activeTab: 'hourly' }" class="mb-8">
+            <div class="flex border-b border-gray-200">
+                <button @click="activeTab = 'hourly'" :class="{ 'border-b-2 border-blue-500': activeTab === 'hourly' }" class="flex-1 py-2 px-4 text-center font-semibold focus:outline-none">
+                    Tarifa por Hora
+                </button>
+                <button @click="activeTab = 'daily'" :class="{ 'border-b-2 border-blue-500': activeTab === 'daily' }" class="flex-1 py-2 px-4 text-center font-semibold focus:outline-none">
+                    Tarifa Diaria
+                </button>
+                <button @click="activeTab = 'weekly'" :class="{ 'border-b-2 border-blue-500': activeTab === 'weekly' }" class="flex-1 py-2 px-4 text-center font-semibold focus:outline-none">
+                    Tarifa Semanal
+                </button>
+            </div>
+            <div class="mt-4">
+                <div x-show="activeTab === 'hourly'" class="text-center">
+                    <span class="text-4xl font-bold text-blue-600">$4.50</span>
+                    <span class="text-gray-600">/hora</span>
+                </div>
+                <div x-show="activeTab === 'daily'" class="text-center">
+                    <span class="text-4xl font-bold text-blue-600">$65.00</span>
+                    <span class="text-gray-600">/día</span>
+                </div>
+                <div x-show="activeTab === 'weekly'" class="text-center">
+                    <span class="text-4xl font-bold text-blue-600">$399.00</span>
+                    <span class="text-gray-600">/semana</span>
+                </div>
+            </div>
+        </div>
         
         <form class="redeem-form mt-6">
             <input type="hidden" name="benefit_id" value="{{ benefit.id }}">
@@ -17,7 +47,7 @@
                 <label for="dni" class="block text-gray-700 text-sm font-bold mb-2">DNI:</label>
                 <input type="text" id="dni" name="dni" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
-            <button type="submit" class="btn-primary">Canjear Beneficio</button>
+            <button type="submit" class="w-full btn-primary">Canjear Beneficio</button>
         </form>
     </div>
 </div>
