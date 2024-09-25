@@ -18,14 +18,12 @@ with app.app_context():
         print("Database URL is not set")
 
     try:
-        # Drop all tables and recreate them
-        logging.info("Dropping all tables...")
-        db.drop_all()
-        logging.info("Creating all tables...")
+        # Create tables if they don't exist
+        logging.info("Creating tables if they don't exist...")
         db.create_all()
-        logging.info("All database tables have been recreated")
+        logging.info("Database tables have been created or already exist")
 
-        # Run seed_data to create admin user
+        # Run seed_data to create admin user and add default data if needed
         logging.info("Running seed_data function...")
         seed_data()
 
@@ -33,12 +31,8 @@ with app.app_context():
         admin_user = User.query.filter_by(username='admin').first()
         if admin_user:
             logging.info(f"Admin user verified - Username: {admin_user.username}, ID: {admin_user.id}")
-            # Test password verification
-            test_password = 'admin123'
-            is_password_correct = admin_user.check_password(test_password)
-            logging.info(f"Is 'admin123' the correct password? {is_password_correct}")
         else:
-            logging.error("Admin user not found in the database after seeding")
+            logging.warning("Admin user not found in the database after seeding")
 
         # Print all users in the database
         users = User.query.all()
