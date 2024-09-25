@@ -18,11 +18,14 @@ with app.app_context():
         print("Database URL is not set")
 
     try:
-        # Create all tables
+        # Drop all tables and recreate them
+        logging.info("Dropping all tables...")
+        db.drop_all()
+        logging.info("Creating all tables...")
         db.create_all()
-        logging.info("All database tables have been created")
+        logging.info("All database tables have been recreated")
 
-        # Always run seed_data to ensure admin user exists
+        # Run seed_data to create admin user
         logging.info("Running seed_data function...")
         seed_data()
 
