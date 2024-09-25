@@ -143,11 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show loading icon on page transition
     window.addEventListener('beforeunload', () => {
-        document.getElementById('loading-icon').style.display = 'block';
+        document.getElementById('loading-icon').style.display = 'flex';
     });
 
     // Hide loading icon when page is fully loaded
     window.addEventListener('load', () => {
-        document.getElementById('loading-icon').style.display = 'none';
+        setTimeout(() => {
+            document.getElementById('loading-icon').style.display = 'none';
+        }, 300); // 300ms delay
     });
 });
