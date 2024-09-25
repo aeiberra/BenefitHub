@@ -37,4 +37,53 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Add event listener for all links
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && link.href && !link.target && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            showLoading();
+            fetch(link.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    document.title = doc.title;
+                    document.querySelector('main').innerHTML = doc.querySelector('main').innerHTML;
+                    history.pushState(null, '', link.href);
+                    hideLoading();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hideLoading();
+                });
+        }
+    });
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', () => {
+        showLoading();
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                document.title = doc.title;
+                document.querySelector('main').innerHTML = doc.querySelector('main').innerHTML;
+                hideLoading();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideLoading();
+            });
+    });
 });
+
+function showLoading() {
+    document.getElementById('loading').classList.remove('hidden');
+}
+
+function hideLoading() {
+    document.getElementById('loading').classList.add('hidden');
+}
