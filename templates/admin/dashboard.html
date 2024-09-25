@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Panel de Administración</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Estadísticas</h2>
+        <p>Total de canjes: <span id="total-redemptions">Cargando...</span></p>
+        <h3 class="font-semibold mt-4 mb-2">Top 5 Beneficios:</h3>
+        <ul id="top-benefits" class="list-disc pl-5">
+            <li>Cargando...</li>
+        </ul>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Acciones Rápidas</h2>
+        <a href="{{ url_for('admin.add_benefit') }}" class="btn-primary block text-center mb-4">Agregar Nuevo Beneficio</a>
+    </div>
+</div>
+
+<h2 class="text-2xl font-semibold mb-4">Lista de Beneficios</h2>
+<div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full">
+        <thead>
+            <tr>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Empresa</th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for benefit in benefits %}
+            <tr>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ benefit.name }}</td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ benefit.category.name }}</td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ benefit.company }}</td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                    <a href="{{ url_for('admin.edit_benefit', id=benefit.id) }}" class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</a>
+                    <form class="delete-form inline" action="{{ url_for('admin.delete_benefit', id=benefit.id) }}" method="POST">
+                        <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

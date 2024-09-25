@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Bienvenido a la Plataforma de Beneficios</h1>
+
+<section class="mb-12">
+    <h2 class="text-2xl font-semibold mb-4">Categorías</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {% for category in categories %}
+        <a href="{{ url_for('main.category', id=category.id) }}" class="bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition duration-300">
+            <h3 class="font-semibold">{{ category.name }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h2 class="text-2xl font-semibold mb-4">Beneficios Destacados</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for benefit in featured_benefits %}
+        <div class="benefit-card">
+            <img src="{{ benefit.image_url }}" alt="{{ benefit.name }}" class="w-full h-48 object-cover rounded-t-lg">
+            <div class="p-4">
+                <h3 class="font-semibold text-lg mb-2">{{ benefit.name }}</h3>
+                <p class="text-gray-600 mb-4">{{ benefit.description | truncate(100) }}</p>
+                <a href="{{ url_for('main.benefit', id=benefit.id) }}" class="btn-primary">Ver Detalles</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

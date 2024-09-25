@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ benefit.name }} - Plataforma de Beneficios{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-lg rounded-lg overflow-hidden">
+    <img src="{{ benefit.image_url }}" alt="{{ benefit.name }}" class="w-full h-64 object-cover">
+    <div class="p-6">
+        <h1 class="text-3xl font-bold mb-4">{{ benefit.name }}</h1>
+        <p class="text-gray-600 mb-4">{{ benefit.description }}</p>
+        <p class="font-semibold mb-2">Empresa: {{ benefit.company }}</p>
+        <p class="font-semibold mb-4">Categoría: {{ benefit.category.name }}</p>
+        
+        <form class="redeem-form mt-6">
+            <input type="hidden" name="benefit_id" value="{{ benefit.id }}">
+            <div class="mb-4">
+                <label for="dni" class="block text-gray-700 text-sm font-bold mb-2">DNI:</label>
+                <input type="text" id="dni" name="dni" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <button type="submit" class="btn-primary">Canjear Beneficio</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
