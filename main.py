@@ -1,6 +1,7 @@
 from app import create_app, db
 from app.models import User, Category, Benefit, Redemption
 from app.seed_data import seed_data
+from flask_migrate import upgrade, init, migrate
 import os
 import logging
 
@@ -18,10 +19,17 @@ with app.app_context():
         print("Database URL is not set")
 
     try:
-        # Create tables if they don't exist
-        logging.info("Creating tables if they don't exist...")
-        db.create_all()
-        logging.info("Database tables have been created or already exist")
+        # Initialize migration repository if it doesn't exist
+        if not os.path.exists('migrations'):
+            init()
+
+        # Create a new migration
+        migrate()
+
+        # Apply the migration
+        upgrade()
+
+        logging.info("Database migration completed successfully")
 
         # Run seed_data to create admin user and add default data if needed
         logging.info("Running seed_data function...")

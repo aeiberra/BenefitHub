@@ -40,7 +40,7 @@ class Redemption(db.Model):
     unique_id = db.Column(db.String(36), unique=True, default=lambda: str(uuid.uuid4()))
     dni = db.Column(db.String(20))
     benefit_id = db.Column(db.Integer, db.ForeignKey('benefit.id'))
-    qr_code = db.Column(db.String(256))
+    qr_code = db.Column(db.Text)  # Changed from String(256) to Text
     timestamp = db.Column(db.DateTime, index=True, default=db.func.now())
     is_scanned = db.Column(db.Boolean, default=False)
     scanned_timestamp = db.Column(db.DateTime, nullable=True)
