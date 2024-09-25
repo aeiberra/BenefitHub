@@ -9,7 +9,7 @@ import base64
 @bp.route('/')
 def index():
     categories = Category.query.all()
-    featured_benefits = Benefit.query.limit(5).all()
+    featured_benefits = Benefit.query.filter_by(featured=True).limit(5).all()
     return render_template('index.html', categories=categories, featured_benefits=featured_benefits)
 
 @bp.route('/category/<int:id>')

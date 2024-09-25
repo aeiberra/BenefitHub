@@ -22,9 +22,10 @@ def add_benefit():
         image_url = request.form['image_url']
         company = request.form['company']
         category_id = request.form['category_id']
+        featured = 'featured' in request.form
         
         benefit = Benefit(name=name, description=description, image_url=image_url,
-                          company=company, category_id=category_id)
+                          company=company, category_id=category_id, featured=featured)
         db.session.add(benefit)
         db.session.commit()
         return redirect(url_for('admin.dashboard'))
@@ -42,6 +43,7 @@ def edit_benefit(id):
         benefit.image_url = request.form['image_url']
         benefit.company = request.form['company']
         benefit.category_id = request.form['category_id']
+        benefit.featured = 'featured' in request.form
         db.session.commit()
         return redirect(url_for('admin.dashboard'))
     
@@ -53,6 +55,14 @@ def edit_benefit(id):
 def delete_benefit(id):
     benefit = Benefit.query.get_or_404(id)
     db.session.delete(benefit)
+    db.session.commit()
+    return redirect(url_for('admin.dashboard'))
+
+@bp.route('/benefit/<int:id>/toggle_featured', methods=['POST'])
+@login_required
+def toggle_featured(id):
+    benefit = Benefit.query.get_or_404(id)
+    benefit.featured = not benefit.featured
     db.session.commit()
     return redirect(url_for('admin.dashboard'))
 

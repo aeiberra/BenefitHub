@@ -30,6 +30,7 @@ class Benefit(db.Model):
     company = db.Column(db.String(128))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     redemptions = db.relationship('Redemption', backref='benefit', lazy='dynamic')
+    featured = db.Column(db.Boolean, default=False)  # New field for featured benefits
 
 class Redemption(db.Model):
     id = db.Column(db.Integer, primary_key=True)

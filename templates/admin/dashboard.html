@@ -27,6 +27,7 @@
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Empresa</th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Destacado</th>
                 <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
         </thead>
@@ -36,6 +37,13 @@
                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ benefit.name }}</td>
                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ benefit.category.name }}</td>
                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ benefit.company }}</td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                    <form action="{{ url_for('admin.toggle_featured', id=benefit.id) }}" method="POST" class="inline">
+                        <button type="submit" class="{% if benefit.featured %}text-yellow-500{% else %}text-gray-500{% endif %} hover:text-yellow-700">
+                            {% if benefit.featured %}★{% else %}☆{% endif %}
+                        </button>
+                    </form>
+                </td>
                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                     <a href="{{ url_for('admin.edit_benefit', id=benefit.id) }}" class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</a>
                     <form class="delete-form inline" action="{{ url_for('admin.delete_benefit', id=benefit.id) }}" method="POST">
