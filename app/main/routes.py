@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, url_for
+from flask import render_template, request, jsonify, url_for, abort
 from app.main import bp
 from app.models import Category, Benefit, Redemption
 from app import db
@@ -26,33 +26,40 @@ def benefit(id):
 
 @bp.route('/redeem', methods=['POST'])
 def redeem():
-    benefit_id = request.form['benefit_id']
-    dni = request.form['dni']
+    benefit_id = request.form.get('benefit_id')
+    dni = request.form.get('dni')
     
-    benefit = Benefit.query.get_or_404(benefit_id)
+    if not benefit_id or not dni:
+        return jsonify({'error': 'Benefit ID and DNI are required'}), 400
     
-    # Create redemption record
-    redemption = Redemption(dni=dni, benefit_id=benefit_id)
-    db.session.add(redemption)
-    db.session.commit()
-    
-    # Generate QR code with unique identifier
-    qr_data = url_for('main.confirm_redemption', unique_id=redemption.unique_id, _external=True)
-    qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    qr.add_data(qr_data)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-    
-    # Convert QR code to base64
-    buffered = io.BytesIO()
-    img.save(buffered)
-    qr_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
-    
-    # Update redemption record with QR code
-    redemption.qr_code = qr_base64
-    db.session.commit()
-    
-    return jsonify({'qr_code': qr_base64})
+    try:
+        benefit = Benefit.query.get_or_404(benefit_id)
+        
+        # Create redemption record
+        redemption = Redemption(dni=dni, benefit_id=benefit_id)
+        db.session.add(redemption)
+        db.session.commit()
+        
+        # Generate QR code with unique identifier
+        qr_data = url_for('main.confirm_redemption', unique_id=redemption.unique_id, _external=True)
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Convert QR code to base64
+        buffered = io.BytesIO()
+        img.save(buffered)
+        qr_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        
+        # Update redemption record with QR code
+        redemption.qr_code = qr_base64
+        db.session.commit()
+        
+        return jsonify({'qr_code': qr_base64})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @bp.route('/confirm_redemption/<unique_id>')
 def confirm_redemption(unique_id):
