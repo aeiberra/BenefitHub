@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
         onEnd: function (evt) {
             var itemEl = evt.item;
             var newIndex = evt.newIndex;
-            var categoryId = itemEl.getAttribute('data-id');
+            var categoryId = parseInt(itemEl.getAttribute('data-id'));
+            
+            console.log('Updating category order:', { categoryId, newIndex });
             
             // Send the new order to the server
             fetch('/admin/update_category_order', {
@@ -19,12 +21,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     new_order: newIndex
                 }),
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     console.log('Category order updated successfully');
                 } else {
-                    console.error('Failed to update category order');
+                    console.error('Failed to update category order:', data.error);
                 }
             })
             .catch((error) => {

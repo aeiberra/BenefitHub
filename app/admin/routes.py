@@ -144,21 +144,26 @@ def update_category_order():
     category_id = data.get('category_id')
     new_order = data.get('new_order')
     
+    logging.info(f"Received request to update category order: category_id={category_id}, new_order={new_order}")
+    
     if category_id is None or new_order is None:
         logging.error(f"Invalid data received: category_id={category_id}, new_order={new_order}")
         return jsonify({'success': False, 'error': 'Invalid data'}), 400
     
     try:
         categories = Category.query.order_by(Category.order).all()
+        logging.info(f"All categories: {[{c.id: c.name} for c in categories]}")
         
-        category_to_move = next((cat for cat in categories if cat.id == category_id), None)
+        category_to_move = Category.query.get(category_id)
         
         if category_to_move is None:
             logging.error(f"Category not found: id={category_id}")
             return jsonify({'success': False, 'error': 'Category not found'}), 404
         
-        categories.remove(category_to_move)
-        categories.insert(new_order, category_to_move)
+        logging.info(f"Category to move: id={category_to_move.id}, name={category_to_move.name}")
+        
+        current_index = categories.index(category_to_move)
+        categories.insert(new_order, categories.pop(current_index))
         
         for index, category in enumerate(categories):
             category.order = index
