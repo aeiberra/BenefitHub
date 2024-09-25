@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Redemption Confirmation{% endblock %}
+{% block title %}Confirmación de Canje{% endblock %}
 
 {% block content %}
 <div class="bg-white shadow-lg rounded-lg overflow-hidden max-w-lg mx-auto mt-10">
     <div class="p-6">
-        <h1 class="text-2xl font-bold mb-4">Redemption Confirmation</h1>
+        <h1 class="text-2xl font-bold mb-4">Confirmación de Canje</h1>
         <p class="text-lg mb-4">{{ message }}</p>
         <div class="mb-4">
-            <h2 class="text-xl font-semibold mb-2">Benefit Details:</h2>
-            <p><strong>Name:</strong> {{ redemption.benefit.name }}</p>
-            <p><strong>Description:</strong> {{ redemption.benefit.description }}</p>
-            <p><strong>Company:</strong> {{ redemption.benefit.company }}</p>
+            <h2 class="text-xl font-semibold mb-2">Detalles del Beneficio:</h2>
+            <p><strong>Nombre:</strong> {{ redemption.benefit.name }}</p>
+            <p><strong>Descripción:</strong> {{ redemption.benefit.description }}</p>
+            <p><strong>Empresa:</strong> {{ redemption.benefit.company }}</p>
         </div>
         <div class="mb-4">
-            <h2 class="text-xl font-semibold mb-2">Redemption Information:</h2>
+            <h2 class="text-xl font-semibold mb-2">Información del Canje:</h2>
             <p><strong>DNI:</strong> {{ redemption.dni }}</p>
-            <p><strong>Redeemed on:</strong> {{ redemption.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p><strong>Canjeado el:</strong> {{ redemption.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
             {% if redemption.is_scanned %}
-                <p><strong>Scanned on:</strong> {{ redemption.scanned_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p><strong>Escaneado el:</strong> {{ redemption.scanned_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
             {% endif %}
         </div>
-        <a href="{{ url_for('main.index') }}" class="btn-primary">Back to Home</a>
+        <a href="{{ url_for('main.index') }}" class="btn-primary">Volver al Inicio</a>
     </div>
 </div>
 {% endblock %}

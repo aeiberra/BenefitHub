@@ -62,8 +62,8 @@ def confirm_redemption(unique_id):
         redemption.is_scanned = True
         redemption.scanned_timestamp = datetime.utcnow()
         db.session.commit()
-        message = "Benefit redeemed successfully!"
+        message = "¡Beneficio canjeado exitosamente!"
     else:
-        message = "This benefit has already been redeemed."
+        message = "Este beneficio ya ha sido canjeado."
     
     return render_template('confirm_redemption.html', redemption=redemption, message=message)
