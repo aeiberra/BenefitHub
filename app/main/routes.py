@@ -74,3 +74,9 @@ def confirm_redemption(unique_id):
         message = "Este beneficio ya ha sido canjeado."
     
     return render_template('confirm_redemption.html', redemption=redemption, message=message)
+
+@bp.route('/search')
+def search():
+    query = request.args.get('q', '')
+    benefits = Benefit.query.filter(Benefit.name.ilike(f'%{query}%') | Benefit.description.ilike(f'%{query}%')).all()
+    return render_template('search_results.html', benefits=benefits, query=query)

@@ -1,29 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}Resultados de búsqueda - Plataforma de Beneficios{% endblock %}
+
 {% block content %}
-<div class="bg-blue-600 text-white py-16 px-6 rounded-lg shadow-lg mb-12">
-    <h1 class="text-4xl font-bold mb-4">Bienvenido a la Plataforma de Beneficios</h1>
-    <p class="text-xl">Encuentra y disfruta de increíbles ofertas en diversas categorías.</p>
-</div>
+<h1 class="text-3xl font-bold mb-6">Resultados de búsqueda para "{{ query }}"</h1>
 
-<section class="mb-12">
-    <h2 class="text-3xl font-semibold mb-6">Categorías</h2>
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-            {% for category in categories %}
-            <a href="{{ url_for('main.category', id=category.id) }}" class="flex flex-col items-center justify-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-300">
-                <img src="{{ category.image_url }}" alt="{{ category.name }}" class="w-12 h-12 object-contain mb-2">
-                <span class="text-sm font-medium text-center">{{ category.name }}</span>
-            </a>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-<section>
-    <h2 class="text-3xl font-semibold mb-6">Beneficios Destacados</h2>
+{% if benefits %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {% for benefit in featured_benefits %}
+        {% for benefit in benefits %}
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <img src="{{ benefit.image_url }}" alt="{{ benefit.name }}" class="w-full h-48 object-cover">
             <div class="p-6">
@@ -44,5 +28,7 @@
         </div>
         {% endfor %}
     </div>
-</section>
+{% else %}
+    <p class="text-xl text-gray-600">No se encontraron resultados para "{{ query }}".</p>
+{% endif %}
 {% endblock %}
