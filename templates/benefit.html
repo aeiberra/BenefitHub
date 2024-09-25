@@ -3,22 +3,42 @@
 {% block title %}{{ benefit.name }} - Plataforma de Beneficios{% endblock %}
 
 {% block content %}
-<div class="bg-white shadow-lg rounded-lg overflow-hidden">
-    <img src="{{ benefit.image_url }}" alt="{{ benefit.name }}" class="w-full h-64 object-cover">
-    <div class="p-6">
-        <h1 class="text-3xl font-bold mb-4">{{ benefit.name }}</h1>
-        <p class="text-gray-600 mb-4">{{ benefit.description }}</p>
-        <p class="font-semibold mb-2">Empresa: {{ benefit.company }}</p>
-        <p class="font-semibold mb-4">Categoría: {{ benefit.category.name }}</p>
-        
-        <form class="redeem-form mt-6">
-            <input type="hidden" name="benefit_id" value="{{ benefit.id }}">
-            <div class="mb-4">
-                <label for="dni" class="block text-gray-700 text-sm font-bold mb-2">DNI:</label>
-                <input type="text" id="dni" name="dni" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <button type="submit" class="btn-primary">Canjear Beneficio</button>
-        </form>
+<div class="fade-in max-w-4xl mx-auto">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="relative">
+            <img src="{{ benefit.image_url }}" alt="{{ benefit.name }}" class="w-full h-64 object-cover header-image" data-speed="0.5">
+            <div class="absolute inset-0 bg-black opacity-50"></div>
+            <h1 class="absolute bottom-0 left-0 text-white text-3xl font-bold p-6">{{ benefit.name }}</h1>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-600 mb-4">{{ benefit.description }}</p>
+            <p class="font-semibold mb-2 text-gray-700">Empresa: {{ benefit.company }}</p>
+            <p class="font-semibold mb-4 text-gray-700">Categoría: {{ benefit.category.name }}</p>
+            
+            <form class="redeem-form mt-6">
+                <input type="hidden" name="benefit_id" value="{{ benefit.id }}">
+                <div class="mb-4">
+                    <label for="dni" class="block text-gray-700 text-sm font-bold mb-2">DNI:</label>
+                    <input type="text" id="dni" name="dni" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <button type="submit" class="btn-primary w-full">Canjear Beneficio</button>
+            </form>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('.header-image');
+        const title = document.querySelector('h1');
+
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            header.style.transform = `translateY(${scrolled * 0.5}px)`;
+            title.style.transform = `translateY(${scrolled * 0.7}px)`;
+        });
+    });
+</script>
 {% endblock %}
