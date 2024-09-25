@@ -38,7 +38,7 @@ def redeem():
     
     # Convert QR code to base64
     buffered = io.BytesIO()
-    img.save(buffered, format="PNG")
+    img.save(buffered)
     qr_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
     
     # Save redemption
