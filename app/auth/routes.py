@@ -33,7 +33,7 @@ def login():
         login_user(user)
         logging.info(f"Successful login for user: {username}")
         next_page = request.args.get('next')
-        if not next_page or not next_page.startswith('/'):
+        if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('admin.dashboard')
         return redirect(next_page)
     
