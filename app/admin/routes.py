@@ -11,7 +11,7 @@ import logging
 @login_required
 def dashboard():
     benefits = Benefit.query.all()
-    categories = Category.query.all()
+    categories = Category.query.order_by(Category.order).all()
     return render_template('admin/dashboard.html', benefits=benefits, categories=categories)
 
 @bp.route('/benefit/add', methods=['GET', 'POST'])
@@ -96,7 +96,8 @@ def delete_category(id):
 @bp.route('/categories')
 @login_required
 def categories():
-    categories = Category.query.all()
+    categories = Category.query.order_by(Category.order).all()
+    logging.info(f"Categories being sent to template: {[(c.id, c.name, c.order) for c in categories]}")
     return render_template('admin/categories.html', categories=categories)
 
 @bp.route('/benefit/<int:id>/toggle_featured', methods=['POST'])
