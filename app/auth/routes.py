@@ -4,6 +4,7 @@ from app.auth import bp
 from app.models import User
 from app import db
 import logging
+from urllib.parse import urlparse
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -16,6 +17,10 @@ def login():
             flash('Username and password are required')
             logging.warning("Login attempt with missing username or password")
             return render_template('admin/login.html')
+        
+        # Check all users in the database
+        all_users = User.query.all()
+        logging.info(f"All users in the database: {[user.username for user in all_users]}")
         
         user = User.query.filter_by(username=username).first()
         logging.info(f"User query result: {user}")
@@ -33,7 +38,7 @@ def login():
         login_user(user)
         logging.info(f"Successful login for user: {username}")
         next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
+        if not next_page or urlparse(next_page).netloc != '':
             next_page = url_for('admin.dashboard')
         return redirect(next_page)
     

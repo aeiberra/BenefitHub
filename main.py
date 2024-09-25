@@ -18,6 +18,10 @@ with app.app_context():
         print("Database URL is not set")
 
     try:
+        # Create all tables
+        db.create_all()
+        logging.info("All database tables have been created")
+
         # Check if the database is empty
         if User.query.count() == 0 and Category.query.count() == 0 and Benefit.query.count() == 0:
             logging.info("Database is empty. Running seed_data function.")

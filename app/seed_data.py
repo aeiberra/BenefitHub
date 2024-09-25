@@ -44,6 +44,11 @@ def seed_data():
                 logging.info(f"Admin user password hash: {admin_user.password_hash}")
             else:
                 logging.error("Admin user not found in database after creation attempt")
+
+            # Check if User table exists and print all users
+            users = User.query.all()
+            logging.info(f"All users in the database: {[user.username for user in users]}")
+
         except Exception as e:
             logging.error(f"Error during admin user creation or verification: {e}")
             db.session.rollback()
