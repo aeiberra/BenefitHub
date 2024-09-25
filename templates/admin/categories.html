@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Gestión de Categorías</h1>
+
+<div class="mb-4">
+    <a href="{{ url_for('admin.add_category') }}" class="btn-primary">Agregar Nueva Categoría</a>
+</div>
+
+<div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full">
+        <thead>
+            <tr>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Imagen</th>
+                <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">{{ category.name }}</td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                    <img src="{{ category.image_url }}" alt="{{ category.name }}" class="h-10 w-10 rounded-full">
+                </td>
+                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                    <a href="{{ url_for('admin.edit_category', id=category.id) }}" class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</a>
+                    <form class="delete-form inline" action="{{ url_for('admin.delete_category', id=category.id) }}" method="POST">
+                        <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

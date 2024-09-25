@@ -6,14 +6,14 @@ def seed_data():
     with app.app_context():
         # Add categories
         categories = [
-            Category(name='Educación'),
-            Category(name='Belleza'),
-            Category(name='Comida'),
-            Category(name='Deportes'),
-            Category(name='Salud'),
-            Category(name='Entretenimiento'),
-            Category(name='Viajes'),
-            Category(name='Mascotas')
+            Category(name='Educación', image_url='https://placehold.co/400x300?text=Educacion'),
+            Category(name='Belleza', image_url='https://placehold.co/400x300?text=Belleza'),
+            Category(name='Comida', image_url='https://placehold.co/400x300?text=Comida'),
+            Category(name='Deportes', image_url='https://placehold.co/400x300?text=Deportes'),
+            Category(name='Salud', image_url='https://placehold.co/400x300?text=Salud'),
+            Category(name='Entretenimiento', image_url='https://placehold.co/400x300?text=Entretenimiento'),
+            Category(name='Viajes', image_url='https://placehold.co/400x300?text=Viajes'),
+            Category(name='Mascotas', image_url='https://placehold.co/400x300?text=Mascotas')
         ]
         db.session.add_all(categories)
         db.session.commit()

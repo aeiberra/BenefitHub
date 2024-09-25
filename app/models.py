@@ -20,6 +20,7 @@ def load_user(id):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
+    image_url = db.Column(db.String(256))  # New field for category image
     benefits = db.relationship('Benefit', backref='category', lazy='dynamic')
 
 class Benefit(db.Model):
@@ -30,7 +31,7 @@ class Benefit(db.Model):
     company = db.Column(db.String(128))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     redemptions = db.relationship('Redemption', backref='benefit', lazy='dynamic')
-    featured = db.Column(db.Boolean, default=False)  # New field for featured benefits
+    featured = db.Column(db.Boolean, default=False)
 
 class Redemption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
