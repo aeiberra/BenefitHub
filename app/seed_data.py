@@ -39,26 +39,32 @@ def seed_data():
             else:
                 logging.info("Admin user already exists")
 
-            # Verify admin user creation
-            admin_user = User.query.filter_by(username='admin').first()
-            if admin_user:
-                logging.info(f"Admin user found in database: {admin_user.username}")
-                logging.info(f"Admin user ID: {admin_user.id}")
-                logging.info(f"Admin user password hash: {admin_user.password_hash}")
-                
-                # Test password verification
-                test_password = 'admin123'
-                is_password_correct = admin_user.check_password(test_password)
-                logging.info(f"Is 'admin123' the correct password? {is_password_correct}")
-            else:
-                logging.error("Admin user not found in database after creation attempt")
+            # Add default categories if they don't exist
+            categories = [
+                {"name": "Educación", "image_url": "https://placehold.co/400x300?text=Educacion"},
+                {"name": "Belleza", "image_url": "https://placehold.co/400x300?text=Belleza"},
+                {"name": "Comida", "image_url": "https://placehold.co/400x300?text=Comida"},
+                {"name": "Deportes", "image_url": "https://placehold.co/400x300?text=Deportes"},
+                {"name": "Salud", "image_url": "https://placehold.co/400x300?text=Salud"},
+                {"name": "Entretenimiento", "image_url": "https://placehold.co/400x300?text=Entretenimiento"},
+                {"name": "Viajes", "image_url": "https://placehold.co/400x300?text=Viajes"},
+                {"name": "Mascotas", "image_url": "https://placehold.co/400x300?text=Mascotas"}
+            ]
 
-            # Check if User table exists and print all users
-            users = User.query.all()
-            logging.info(f"All users in the database: {[user.username for user in users]}")
+            for category_data in categories:
+                existing_category = Category.query.filter_by(name=category_data["name"]).first()
+                if not existing_category:
+                    new_category = Category(name=category_data["name"], image_url=category_data["image_url"])
+                    db.session.add(new_category)
+                    logging.info(f"Added new category: {category_data['name']}")
+                else:
+                    logging.info(f"Category already exists: {category_data['name']}")
+
+            db.session.commit()
+            logging.info("Categories added successfully")
 
         except Exception as e:
-            logging.error(f"Error during admin user creation or verification: {e}")
+            logging.error(f"Error during data seeding: {e}")
             db.session.rollback()
 
         logging.info("Seed data process completed.")
