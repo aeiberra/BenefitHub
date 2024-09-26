@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, request, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app.admin import bp
 from app.models import Benefit, Category, Redemption
 from app import db
@@ -116,6 +116,7 @@ def analytics():
 @bp.route('/api/analytics')
 @login_required
 def api_analytics():
+    logging.info(f"User {current_user.username} accessing analytics API")
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
     daily_redemptions = db.session.query(
         func.date(Redemption.timestamp).label('date'),
@@ -130,13 +131,15 @@ def api_analytics():
     category_redemptions = db.session.query(
         Category.name,
         func.count(Redemption.id).label('count')
-    ).join(Benefit).join(Redemption).group_by(Category.id).all()
+    ).select_from(Category).join(Benefit, Category.id == Benefit.category_id).join(Redemption, Benefit.id == Redemption.benefit_id).group_by(Category.id).all()
 
-    return jsonify({
+    response_data = {
         'daily_redemptions': [{'date': str(item.date), 'count': item.count} for item in daily_redemptions],
         'top_benefits': [{'name': item.name, 'count': item.count} for item in top_benefits],
         'category_redemptions': [{'name': item.name, 'count': item.count} for item in category_redemptions]
-    })
+    }
+    logging.info(f"Analytics API response: {response_data}")
+    return jsonify(response_data)
 
 @bp.route('/update_category_order', methods=['POST'])
 @login_required

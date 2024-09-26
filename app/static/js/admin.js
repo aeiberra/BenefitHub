@@ -14,11 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/admin/api/analytics')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('total-redemptions').textContent = data.total_redemptions;
+            // Update total redemptions
+            const totalRedemptions = data.daily_redemptions.reduce((sum, day) => sum + day.count, 0);
+            document.getElementById('total-redemptions').textContent = totalRedemptions;
+
+            // Update top benefits
             const topBenefitsList = document.getElementById('top-benefits');
+            topBenefitsList.innerHTML = ''; // Clear existing list
             data.top_benefits.forEach(benefit => {
                 const li = document.createElement('li');
-                li.textContent = benefit.name;
+                li.textContent = `${benefit.name}: ${benefit.count} redemptions`;
                 topBenefitsList.appendChild(li);
             });
         })
