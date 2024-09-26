@@ -6,10 +6,12 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-xl font-semibold mb-4">Estadísticas</h2>
-        <p>Total de canjes: <span id="total-redemptions">Cargando...</span></p>
+        <p>Total de canjes: {{ total_redemptions }}</p>
         <h3 class="font-semibold mt-4 mb-2">Top 5 Beneficios:</h3>
-        <ul id="top-benefits" class="list-disc pl-5">
-            <li>Cargando...</li>
+        <ul class="list-disc pl-5">
+            {% for benefit in top_benefits %}
+                <li>{{ benefit.name }}: {{ benefit.count }} canjes</li>
+            {% endfor %}
         </ul>
     </div>
     <div class="bg-white rounded-lg shadow p-6">

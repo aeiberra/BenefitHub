@@ -12,7 +12,9 @@ import logging
 def dashboard():
     benefits = Benefit.query.all()
     categories = Category.query.order_by(Category.order).all()
-    return render_template('admin/dashboard.html', benefits=benefits, categories=categories)
+    total_redemptions = Redemption.query.count()
+    top_benefits = db.session.query(Benefit.name, func.count(Redemption.id).label('count')).join(Redemption).group_by(Benefit.id).order_by(func.count(Redemption.id).desc()).limit(5).all()
+    return render_template('admin/dashboard.html', benefits=benefits, categories=categories, total_redemptions=total_redemptions, top_benefits=top_benefits)
 
 @bp.route('/benefit/add', methods=['GET', 'POST'])
 @login_required
