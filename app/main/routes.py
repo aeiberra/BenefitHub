@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, url_for, abort
+from flask import render_template, request, jsonify, url_for, abort, current_app
 from app.main import bp
 from app.models import Category, Benefit, Redemption
 from app import db
@@ -6,6 +6,7 @@ import qrcode
 import io
 import base64
 from datetime import datetime
+import logging
 
 @bp.route('/')
 def index():
@@ -26,19 +27,25 @@ def benefit(id):
 
 @bp.route('/redeem', methods=['POST'])
 def redeem():
+    current_app.logger.info('Redeem route accessed')
     benefit_id = request.form.get('benefit_id')
     dni = request.form.get('dni')
     
+    current_app.logger.info(f'Received benefit_id: {benefit_id}, dni: {dni}')
+    
     if not benefit_id or not dni:
+        current_app.logger.error('Benefit ID or DNI missing')
         return jsonify({'error': 'Benefit ID and DNI are required'}), 400
     
     try:
         benefit = Benefit.query.get_or_404(benefit_id)
+        current_app.logger.info(f'Benefit found: {benefit.name}')
         
         # Create redemption record
         redemption = Redemption(dni=dni, benefit_id=benefit_id)
         db.session.add(redemption)
         db.session.commit()
+        current_app.logger.info(f'Redemption record created with ID: {redemption.id}')
         
         # Generate QR code with unique identifier
         qr_data = url_for('main.confirm_redemption', unique_id=redemption.unique_id, _external=True)
@@ -55,9 +62,11 @@ def redeem():
         # Update redemption record with QR code
         redemption.qr_code = qr_base64
         db.session.commit()
+        current_app.logger.info('QR code generated and saved')
         
         return jsonify({'qr_code': qr_base64})
     except Exception as e:
+        current_app.logger.error(f'Error in redeem process: {str(e)}')
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
