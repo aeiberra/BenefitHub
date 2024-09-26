@@ -132,7 +132,7 @@ def api_analytics():
     category_redemptions = db.session.query(
         Category.name,
         func.count(Redemption.id).label('count')
-    ).join(Benefit).join(Redemption).group_by(Category.id).all()
+    ).select_from(Category).join(Benefit, Category.id == Benefit.category_id).join(Redemption, Benefit.id == Redemption.benefit_id).group_by(Category.id).all()
     
     response_data = {
         'daily_redemptions': [{'date': str(item.date), 'count': item.count} for item in daily_redemptions],
