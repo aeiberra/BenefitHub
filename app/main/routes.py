@@ -27,6 +27,9 @@ def benefit(id):
 
 @bp.route('/redeem', methods=['POST'])
 def redeem():
+    if not request.is_xhr:
+        return jsonify({'error': 'AJAX requests only'}), 400
+
     benefit_id = request.form.get('benefit_id')
     dni = request.form.get('dni')
     
