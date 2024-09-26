@@ -2,10 +2,12 @@ from flask import render_template, request, jsonify, url_for, abort
 from app.main import bp
 from app.models import Category, Benefit, Redemption
 from app import db
+from sqlalchemy import func
+from datetime import datetime, timedelta
 import qrcode
 import io
 import base64
-from datetime import datetime
+from urllib.parse import urlparse
 
 @bp.route('/')
 def index():
@@ -68,6 +70,13 @@ def confirm_redemption(unique_id):
     if not redemption.is_scanned:
         redemption.is_scanned = True
         redemption.scanned_timestamp = datetime.utcnow()
+        redemption.is_redeemed = True
+        redemption.redeemed_timestamp = datetime.utcnow()
+        db.session.commit()
+        message = "¡Beneficio canjeado exitosamente!"
+    elif not redemption.is_redeemed:
+        redemption.is_redeemed = True
+        redemption.redeemed_timestamp = datetime.utcnow()
         db.session.commit()
         message = "¡Beneficio canjeado exitosamente!"
     else:
