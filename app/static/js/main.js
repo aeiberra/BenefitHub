@@ -45,11 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     console.error('Response not OK:', response.status, response.statusText);
-                    throw new Error('Failed to redeem benefit');
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to redeem benefit');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while redeeming the benefit. Please try again.');
+                alert('An error occurred while redeeming the benefit: ' + error.message);
             }
         });
     });

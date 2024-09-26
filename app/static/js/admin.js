@@ -20,12 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update top benefits
             const topBenefitsList = document.getElementById('top-benefits');
-            topBenefitsList.innerHTML = ''; // Clear existing list
-            data.top_benefits.forEach(benefit => {
-                const li = document.createElement('li');
-                li.textContent = `${benefit.name}: ${benefit.count} redemptions`;
-                topBenefitsList.appendChild(li);
-            });
+            if (topBenefitsList) {
+                topBenefitsList.innerHTML = ''; // Clear existing list
+                data.top_benefits.forEach(benefit => {
+                    const li = document.createElement('li');
+                    li.textContent = `${benefit.name}: ${benefit.count} redemptions`;
+                    topBenefitsList.appendChild(li);
+                });
+            }
         })
         .catch(error => console.error('Error fetching stats:', error));
 });

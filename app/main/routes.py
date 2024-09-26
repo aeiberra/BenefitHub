@@ -28,10 +28,11 @@ def benefit(id):
 @bp.route('/redeem', methods=['POST'])
 def redeem():
     current_app.logger.info('Redeem route accessed')
-    benefit_id = request.form.get('benefit_id')
-    dni = request.form.get('dni')
+    data = request.get_json()
+    benefit_id = data.get('benefit_id')
+    dni = data.get('dni')
     
-    current_app.logger.info(f'Received benefit_id: {benefit_id}, dni: {dni}')
+    current_app.logger.info(f'Received data: benefit_id: {benefit_id}, dni: {dni}')
     
     if not benefit_id or not dni:
         current_app.logger.error('Benefit ID or DNI missing')
@@ -39,7 +40,7 @@ def redeem():
     
     try:
         benefit = Benefit.query.get_or_404(benefit_id)
-        current_app.logger.info(f'Benefit found: {benefit.name}')
+        current_app.logger.info(f'Benefit found: {benefit.name}, ID: {benefit.id}, Category: {benefit.category.name}')
         
         # Create redemption record
         redemption = Redemption(dni=dni, benefit_id=benefit_id)
@@ -62,7 +63,7 @@ def redeem():
         # Update redemption record with QR code
         redemption.qr_code = qr_base64
         db.session.commit()
-        current_app.logger.info('QR code generated and saved')
+        current_app.logger.info(f'QR code generated and saved for redemption ID: {redemption.id}')
         
         return jsonify({'qr_code': qr_base64})
     except Exception as e:
