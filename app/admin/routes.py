@@ -137,7 +137,7 @@ def api_analytics():
     category_redemptions = db.session.query(
         Category.name,
         func.count(Redemption.id).label('count')
-    ).select_from(Category).join(Benefit, Category.id == Benefit.category_id).join(Redemption, Benefit.id == Redemption.benefit_id).group_by(Category.id).all()
+    ).join(Benefit).join(Redemption).group_by(Category.id).all()
     logging.info(f"Category redemptions query result: {category_redemptions}")
 
     response_data = {
