@@ -11,7 +11,7 @@
         <p class="font-semibold mb-2">Empresa: {{ benefit.company }}</p>
         <p class="font-semibold mb-4">Categoría: {{ benefit.category.name }}</p>
         
-        <form id="redeem-form" class="mt-6">
+        <form class="redeem-form mt-6">
             <input type="hidden" name="benefit_id" value="{{ benefit.id }}">
             <div class="mb-4">
                 <label for="dni" class="block text-gray-700 text-sm font-bold mb-2">DNI:</label>
@@ -19,59 +19,6 @@
             </div>
             <button type="submit" class="btn-primary">Canjear Beneficio</button>
         </form>
-        <div id="error-message" class="text-red-500 mt-2 hidden"></div>
-        <div id="success-message" class="text-green-500 mt-2 hidden"></div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const redeemForm = document.getElementById('redeem-form');
-    const errorMessage = document.getElementById('error-message');
-    const successMessage = document.getElementById('success-message');
-    
-    redeemForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(redeemForm);
-        
-        try {
-            const response = await fetch('/redeem', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-                const qrCode = data.qr_code;
-                
-                // Create a modal to display the QR code
-                const modal = document.createElement('div');
-                modal.innerHTML = `
-                    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="qr-modal">
-                        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Tu Código QR:</h3>
-                            <img src="data:image/png;base64,${qrCode}" alt="QR Code" class="mx-auto">
-                            <button class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="this.closest('#qr-modal').remove()">Cerrar</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                errorMessage.classList.add('hidden');
-                successMessage.textContent = "Beneficio canjeado exitosamente. Por favor, guarda el código QR.";
-                successMessage.classList.remove('hidden');
-            } else {
-                throw new Error(data.error || 'Failed to redeem benefit');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            errorMessage.textContent = error.message;
-            errorMessage.classList.remove('hidden');
-            successMessage.classList.add('hidden');
-        }
-    });
-});
-</script>
 {% endblock %}
