@@ -11,7 +11,7 @@
         <p class="font-semibold mb-2">Empresa: {{ benefit.company }}</p>
         <p class="font-semibold mb-4">Categoría: {{ benefit.category.name }}</p>
         
-        <form class="redeem-form mt-6">
+        <form id="redeem-form" class="mt-6">
             <input type="hidden" name="benefit_id" value="{{ benefit.id }}">
             <div class="mb-4">
                 <label for="dni" class="block text-gray-700 text-sm font-bold mb-2">DNI:</label>
@@ -28,7 +28,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const redeemForm = document.querySelector('.redeem-form');
+    const redeemForm = document.getElementById('redeem-form');
     const errorMessage = document.getElementById('error-message');
     const successMessage = document.getElementById('success-message');
     
