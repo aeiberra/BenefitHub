@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
+    initializeComponents();
+    setupNavigationHandlers();
+});
+
+function initializeComponents() {
+    initializeRedeemForms();
+    initializeDeleteForms();
+    initializeSortableCategories();
+    initializeAnalytics();
+}
+
+function initializeRedeemForms() {
     const redeemForms = document.querySelectorAll('.redeem-form');
     
     redeemForms.forEach(form => {
@@ -37,54 +49,117 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+}
 
+function initializeDeleteForms() {
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to delete this item?')) {
+                form.submit();
+            }
+        });
+    });
+}
+
+function initializeSortableCategories() {
+    var el = document.getElementById('sortable-categories');
+    if(el) {
+        var sortable = Sortable.create(el, {
+            handle: '.handle',
+            animation: 150,
+            onEnd: function (evt) {
+                var itemEl = evt.item;
+                var newIndex = evt.newIndex;
+                var categoryId = parseInt(itemEl.getAttribute('data-id'));
+
+                console.log('Updating category order:', { categoryId, newIndex });
+
+                // Send the new order to the server
+                fetch('/admin/update_category_order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        category_id: categoryId,
+                        new_order: newIndex
+                    }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Category order updated successfully');
+                    } else {
+                        console.error('Failed to update category order:', data.error);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    }
+}
+
+function initializeAnalytics() {
+    const analyticsCharts = document.querySelectorAll('[data-chart]');
+    if (analyticsCharts.length > 0) {
+        fetch('/admin/api/analytics')
+            .then(response => response.json())
+            .then(data => {
+                createDailyRedemptionsChart(data.daily_redemptions);
+                createTopBenefitsChart(data.top_benefits);
+                createCategoryRedemptionsChart(data.category_redemptions);
+            })
+            .catch(error => console.error('Error fetching analytics data:', error));
+    }
+}
+
+function setupNavigationHandlers() {
     // Add event listener for all links
     document.addEventListener('click', (e) => {
         const link = e.target.closest('a');
         if (link && link.href && !link.target && !e.ctrlKey && !e.metaKey) {
             e.preventDefault();
-            showLoading();
-            fetch(link.href)
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    document.title = doc.title;
-                    const mainContent = doc.querySelector('main');
-                    if (mainContent) {
-                        document.querySelector('main').innerHTML = mainContent.innerHTML;
-                    }
-                    history.pushState(null, '', link.href);
-                    hideLoading();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    hideLoading();
-                });
+            navigateToPage(link.href);
         }
     });
 
     // Handle browser back/forward
     window.addEventListener('popstate', () => {
-        showLoading();
-        fetch(window.location.href)
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                document.title = doc.title;
-                const mainContent = doc.querySelector('main');
-                if (mainContent) {
-                    document.querySelector('main').innerHTML = mainContent.innerHTML;
-                }
-                hideLoading();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                hideLoading();
-            });
+        navigateToPage(window.location.href);
     });
-});
+}
+
+function navigateToPage(url) {
+    showLoading();
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            document.title = doc.title;
+            const mainContent = doc.querySelector('main');
+            if (mainContent) {
+                document.querySelector('main').innerHTML = mainContent.innerHTML;
+            }
+            history.pushState(null, '', url);
+            hideLoading();
+            initializeComponents();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            hideLoading();
+        });
+}
 
 function showLoading() {
     const loadingElement = document.getElementById('loading');
@@ -101,5 +176,83 @@ function hideLoading() {
         loadingElement.classList.add('hidden');
     } else {
         console.warn('Loading element not found');
+    }
+}
+
+// Chart creation functions
+function createDailyRedemptionsChart(data) {
+    const ctx = document.getElementById('dailyRedemptionsChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(item => item.date),
+                datasets: [{
+                    label: 'Daily Redemptions',
+                    data: data.map(item => item.count),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
+
+function createTopBenefitsChart(data) {
+    const ctx = document.getElementById('topBenefitsChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.name),
+                datasets: [{
+                    label: 'Redemptions',
+                    data: data.map(item => item.count),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+}
+
+function createCategoryRedemptionsChart(data) {
+    const ctx = document.getElementById('categoryRedemptionsChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.map(item => item.name),
+                datasets: [{
+                    data: data.map(item => item.count),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
     }
 }
