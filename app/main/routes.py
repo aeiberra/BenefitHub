@@ -42,7 +42,7 @@ def redeem():
         # Create redemption record
         redemption = Redemption(dni=dni, benefit_id=benefit_id)
         db.session.add(redemption)
-        db.session.commit()
+        db.session.flush()  # Flush to get the id without committing
         
         # Generate QR code with unique identifier
         qr_data = url_for('main.confirm_redemption', unique_id=redemption.unique_id, _external=True)
