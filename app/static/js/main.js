@@ -7,7 +7,7 @@ function initializeComponents() {
     initializeRedeemForms();
     initializeDeleteForms();
     initializeSortableCategories();
-    initializeAnalytics();
+    initializeAnalyticsCharts();
 }
 
 function initializeRedeemForms() {
@@ -109,9 +109,9 @@ function initializeSortableCategories() {
     }
 }
 
-function initializeAnalytics() {
-    const analyticsCharts = document.querySelectorAll('[data-chart]');
-    if (analyticsCharts.length > 0) {
+function initializeAnalyticsCharts() {
+    const analyticsContainer = document.getElementById('analytics-container');
+    if (analyticsContainer) {
         fetch('/admin/api/analytics')
             .then(response => response.json())
             .then(data => {
@@ -125,10 +125,10 @@ function initializeAnalytics() {
 
 function setupNavigationHandlers() {
     // Add event listener for all links
-    document.addEventListener('click', (e) => {
-        const link = e.target.closest('a');
-        if (link && link.href && !link.target && !e.ctrlKey && !e.metaKey) {
-            e.preventDefault();
+    document.addEventListener('click', (event) => {
+        const link = event.target.closest('a');
+        if (link && link.href && !link.target && !event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
             navigateToPage(link.href);
         }
     });
@@ -154,6 +154,7 @@ function navigateToPage(url) {
             history.pushState(null, '', url);
             hideLoading();
             initializeComponents();
+            initializeAnalyticsCharts();
         })
         .catch(error => {
             console.error('Error:', error);
