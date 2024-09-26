@@ -6,12 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             console.log('Form submission started');
             const formData = new FormData(form);
+            const benefit_id = formData.get('benefit_id');
+            const dni = formData.get('dni');
             
             try {
                 console.log('Sending POST request to /redeem');
                 const response = await fetch('/redeem', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ benefit_id, dni })
                 });
                 
                 console.log('Response received:', response);
