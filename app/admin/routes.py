@@ -118,20 +118,27 @@ def analytics():
 def api_analytics():
     logging.info(f"User {current_user.username} accessing analytics API")
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
+    
+    # Daily redemptions query
     daily_redemptions = db.session.query(
         func.date(Redemption.timestamp).label('date'),
         func.count(Redemption.id).label('count')
     ).filter(Redemption.timestamp >= seven_days_ago).group_by(func.date(Redemption.timestamp)).all()
+    logging.info(f"Daily redemptions query result: {daily_redemptions}")
 
+    # Top benefits query
     top_benefits = db.session.query(
         Benefit.name,
         func.count(Redemption.id).label('count')
     ).join(Redemption).group_by(Benefit.id).order_by(func.count(Redemption.id).desc()).limit(5).all()
+    logging.info(f"Top benefits query result: {top_benefits}")
 
+    # Category redemptions query
     category_redemptions = db.session.query(
         Category.name,
         func.count(Redemption.id).label('count')
     ).select_from(Category).join(Benefit, Category.id == Benefit.category_id).join(Redemption, Benefit.id == Redemption.benefit_id).group_by(Category.id).all()
+    logging.info(f"Category redemptions query result: {category_redemptions}")
 
     response_data = {
         'daily_redemptions': [{'date': str(item.date), 'count': item.count} for item in daily_redemptions],
