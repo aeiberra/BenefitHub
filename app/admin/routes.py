@@ -12,8 +12,8 @@ import logging
 def dashboard():
     benefits = Benefit.query.all()
     categories = Category.query.order_by(Category.order).all()
-    total_redemptions = Redemption.query.count()
-    top_benefits = db.session.query(Benefit.name, func.count(Redemption.id).label('count')).join(Redemption).group_by(Benefit.id).order_by(func.count(Redemption.id).desc()).limit(5).all()
+    total_redemptions = Redemption.query.filter_by(is_scanned=True).count()
+    top_benefits = db.session.query(Benefit.name, func.count(Redemption.id).label('count')).join(Redemption).filter(Redemption.is_scanned==True).group_by(Benefit.id).order_by(func.count(Redemption.id).desc()).limit(5).all()
     return render_template('admin/dashboard.html', benefits=benefits, categories=categories, total_redemptions=total_redemptions, top_benefits=top_benefits)
 
 @bp.route('/benefit/add', methods=['GET', 'POST'])
@@ -122,19 +122,19 @@ def api_analytics():
     seven_days_ago = datetime.utcnow() - timedelta(days=7)
     
     daily_redemptions = db.session.query(
-        func.date(Redemption.timestamp).label('date'),
+        func.date(Redemption.scanned_timestamp).label('date'),
         func.count(Redemption.id).label('count')
-    ).filter(Redemption.timestamp >= seven_days_ago).group_by(func.date(Redemption.timestamp)).all()
+    ).filter(Redemption.is_scanned==True, Redemption.scanned_timestamp >= seven_days_ago).group_by(func.date(Redemption.scanned_timestamp)).all()
     
     top_benefits = db.session.query(
         Benefit.name,
         func.count(Redemption.id).label('count')
-    ).join(Redemption).group_by(Benefit.id).order_by(func.count(Redemption.id).desc()).limit(5).all()
+    ).join(Redemption).filter(Redemption.is_scanned==True).group_by(Benefit.id).order_by(func.count(Redemption.id).desc()).limit(5).all()
     
     category_redemptions = db.session.query(
         Category.name,
         func.count(Redemption.id).label('count')
-    ).select_from(Category).join(Benefit, Category.id == Benefit.category_id).join(Redemption, Benefit.id == Redemption.benefit_id).group_by(Category.id).all()
+    ).select_from(Category).join(Benefit, Category.id == Benefit.category_id).join(Redemption, Benefit.id == Redemption.benefit_id).filter(Redemption.is_scanned==True).group_by(Category.id).all()
     
     response_data = {
         'daily_redemptions': [{'date': str(item.date), 'count': item.count} for item in daily_redemptions],

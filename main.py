@@ -1,11 +1,12 @@
 from app import create_app, db
 from app.models import User, Category, Benefit, Redemption
 from app.seed_data import seed_data
-from flask_migrate import upgrade, init, migrate
+from flask_migrate import Migrate, upgrade, init, migrate
 import os
 import logging
 
 app = create_app()
+migrate = Migrate(app, db)
 
 with app.app_context():
     # Configure logging
@@ -22,13 +23,14 @@ with app.app_context():
         # Initialize migration repository if it doesn't exist
         if not os.path.exists('migrations'):
             init()
+            logging.info("Migration repository initialized")
 
         # Create a new migration
         migrate()
+        logging.info("New migration created")
 
         # Apply the migration
         upgrade()
-
         logging.info("Database migration completed successfully")
 
         # Run seed_data to create admin user and add default data if needed

@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-6">Analytics Dashboard</h1>
+<h1 class="text-3xl font-bold mb-6">Analytics Dashboard (Scanned QR Codes Only)</h1>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4">Daily Redemptions</h2>
+        <h2 class="text-xl font-semibold mb-4">Daily Scanned Redemptions</h2>
         <canvas id="dailyRedemptionsChart"></canvas>
     </div>
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4">Top 5 Benefits</h2>
+        <h2 class="text-xl font-semibold mb-4">Top 5 Scanned Benefits</h2>
         <canvas id="topBenefitsChart"></canvas>
     </div>
 </div>
 
 <div class="bg-white rounded-lg shadow p-6">
-    <h2 class="text-xl font-semibold mb-4">Redemptions by Category</h2>
+    <h2 class="text-xl font-semibold mb-4">Scanned Redemptions by Category</h2>
     <canvas id="categoryRedemptionsChart"></canvas>
 </div>
 {% endblock %}
@@ -40,7 +40,7 @@ function createDailyRedemptionsChart(data) {
         data: {
             labels: data.map(item => item.date),
             datasets: [{
-                label: 'Daily Redemptions',
+                label: 'Daily Scanned Redemptions',
                 data: data.map(item => item.count),
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1
@@ -64,7 +64,7 @@ function createTopBenefitsChart(data) {
         data: {
             labels: data.map(item => item.name),
             datasets: [{
-                label: 'Redemptions',
+                label: 'Scanned Redemptions',
                 data: data.map(item => item.count),
                 backgroundColor: 'rgba(75, 192, 192, 0.6)'
             }]
