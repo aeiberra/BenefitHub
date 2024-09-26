@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Fetch and display stats
-    fetch('/admin/stats')
+    fetch('/admin/api/analytics')
         .then(response => response.json())
         .then(data => {
             document.getElementById('total-redemptions').textContent = data.total_redemptions;
