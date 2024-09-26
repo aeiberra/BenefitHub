@@ -4,53 +4,36 @@ document.addEventListener('DOMContentLoaded', () => {
     redeemForms.forEach(form => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            console.log('Form submission started');
             const formData = new FormData(form);
-            const benefit_id = formData.get('benefit_id');
-            const dni = formData.get('dni');
             
             try {
-                console.log('Sending POST request to /redeem');
                 const response = await fetch('/redeem', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ benefit_id, dni })
+                    body: formData
                 });
                 
-                console.log('Response received:', response);
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('JSON data received:', data);
                     const qrCode = data.qr_code;
                     
-                    if (qrCode) {
-                        console.log('QR code received, creating modal');
-                        // Create a modal to display the QR code
-                        const modal = document.createElement('div');
-                        modal.innerHTML = `
-                            <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="qr-modal">
-                                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Tu Código QR:</h3>
-                                    <img src="data:image/png;base64,${qrCode}" alt="QR Code" class="mx-auto">
-                                    <button class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="this.closest('#qr-modal').remove()">Cerrar</button>
-                                </div>
+                    // Create a modal to display the QR code
+                    const modal = document.createElement('div');
+                    modal.innerHTML = `
+                        <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="qr-modal">
+                            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900 mb-2">Tu Código QR:</h3>
+                                <img src="data:image/png;base64,${qrCode}" alt="QR Code" class="mx-auto">
+                                <button class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="this.closest('#qr-modal').remove()">Cerrar</button>
                             </div>
-                        `;
-                        document.body.appendChild(modal);
-                    } else {
-                        console.error('QR code not received in the response');
-                        alert('Error: QR code not received. Please try again.');
-                    }
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
                 } else {
-                    console.error('Response not OK:', response.status, response.statusText);
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to redeem benefit');
+                    throw new Error('Failed to redeem benefit');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while redeeming the benefit: ' + error.message);
+                alert('An error occurred while redeeming the benefit. Please try again.');
             }
         });
     });
